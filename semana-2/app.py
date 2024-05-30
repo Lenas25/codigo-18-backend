@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 # Flask -> clase que permite crear un servidor web
 # jsonify -> convierte un diccionario en un json
-# request -> permite obtener la informacion que envia el usuario
+# request -> permite obtener la informacion que envia el usuario en este caso como body de postman
 from utils import encrypt_password
 # importa la funcion de encriptar la contraseña
 from config import Config #importa la clase Config
@@ -19,15 +19,54 @@ migrate.init_app(app, db)
 
 @app.route('/')
 def home():
-    # retorna la informacion en formato json de la base de datos, query.all() -> obtiene todos los registros de la tabla
-    users = User.query.all()
+    # retorna la informacion en formato json de la base de datos, query.all() -> obtiene todos los registros de la tabla como una lista
+    # users = User.query.all()
     # recorre todos los registros de la tabla y los convierte en un diccionario y los guarda en la variable users
     return jsonify(
         {
-            'users': [ user.to_dict() for user in users]
+            'users': '[ user.to_dict() for user in users]'
         }
     )
 
+# * get
+@app.route("/api/v1/user")
+def get_all_users():
+    try:
+        users = User.query.all()
+
+        dict_users = []
+
+        for user in users:
+            dict_users.append(user.to_dict())
+
+        return jsonify({
+            'users': dict_users # [user.to_dict() for user in users]
+        })
+    except Exception as e:
+        return jsonify({
+            'error': e,
+            'linea': e.__traceback__.tb_lineno
+        }),500
+
+# * get user by id
+@app.route("/api/v1/user/<int:id>")
+def get_user_by_id(id):
+    try:
+        user = User.query.get(id) #obtiene el usuario por el id 
+        if user:
+            return jsonify({
+                'user': user.to_dict()
+            })
+        return jsonify({
+            'message': 'User not found'
+        }), 404
+    except Exception as e:
+        return jsonify({
+            'error': e,
+            'linea': e.__traceback__.tb_lineno
+        }),500
+
+# * post
 """
 Ejemplo donde recibiremos la informacion del usuario pero desde POSTMAN, por defecto la url es get, si se entra a esta url desde el navegador dara error ya que no es un metodo GET sino POST
 """
@@ -49,15 +88,62 @@ def create_user():
 
         db.session.add(new_user) #agrega el nuevo usuario a la db
         db.session.commit() #guarda los cambios en la db
-
+        # retorna la informacion del nuevo usuario en formato json
         return jsonify({'new_user': user_data})
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+# * put
+@app.route('/api/v1/user/<int:id>',methods=['PUT'])
+def edit_user(id):
+    try:
+        user = User.query.get(id)
+        if user is None:
+            return jsonify({
+                'message': 'User not found'
+            }), 404
+        data = request.get_json();
+        user.full_name = f"{data['name']} {data['lastname']}"
+        user.email = data['email']
+        user.password = encrypt_password(data['password']).decode('utf-8')
+        user.phoneNumber = data['phone_number']
+        user.gender = data['gender']
+        db.session.commit()
+        return jsonify({
+            'message': 'User updated'
+        })
 
+    except Exception as e:
+        return jsonify({
+            'error': e,
+            'linea': e.__traceback__.tb_lineno
+        }),500
+
+# * delete
+@app.route('/api/v1/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    try:
+        user = User.query.get(id)
+        if user is None:
+            return jsonify({
+                'message': 'User not found'
+            }), 404
+        db.session.delete(user)
+        db.session.commit()
+
+        return jsonify({
+            'message': 'User deleted'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': e,
+            'linea': e.__traceback__.tb_lineno
+        }), 500
 
 # depende del entorno el __name__ puede cambiar
 if __name__ == '__main__':
-    # el app_context() permite que se ejecute el codigo dentro de la funcion
+    # el app_context() permite que se ejecute el codigo una vez dentro de la funcion
     with app.app_context():
         db.create_all() #el create_all() crea las tablas en la db
 

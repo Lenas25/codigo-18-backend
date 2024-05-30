@@ -1,0 +1,293 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Empresas Areas y Empleados | Api Flask",
+    "version": "1.0.0",
+    "description": "Esta Api fue creada en Flask con el objetivo que los usuarios puedan gestionar empleados de una empresa, asociarla a una area de esta y gestionarlo.",
+    "contact": {
+      "email": "easp0104@gmail.com"
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Areas",
+      "description": "Todo sobre areas de la empresa",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://localhost:5000/areas"
+      }
+    },
+    {
+      "name": "Empleados",
+      "description": "Todo sobre empleados de cada area",
+      "externalDocs": {
+        "description": "Find out more about our store",
+        "url": "http://localhost:5000/empleados"
+      }
+    }
+  ],
+  "paths": {
+    "/areas": {
+      "get": {
+        "tags": [
+          "Areas"
+        ],
+        "summary": "Listar todas las areas registradas en la empresa",
+        "description": "Devolver todos los datos de cada area",
+        "operationId": "listarAreas",
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Areas"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/area": {
+      "post": {
+        "tags": [
+          "Areas"
+        ],
+        "summary": "Agregar una nueva area a la empresa",
+        "description": "Agregar una nueva area",
+        "operationId": "agregarArea",
+        "requestBody": {
+          "description": "Crea una nueva area en la base de datos",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Area"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/area/{areaId}": {
+      "get": {
+        "tags": [
+          "Areas"
+        ],
+        "summary": "Encuentra la area por Id",
+        "description": "Retorna solo un area",
+        "operationId": "obtenerAreaPorId",
+        "parameters": [
+          {
+            "name": "areaId",
+            "in": "path",
+            "description": "ID del area a retornar",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Area"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID no registrado"
+          }
+        }
+      }
+    },
+    "/empleado": {
+      "post": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Agregar un nuevo empleado a una area",
+        "description": "Agregar una nuevo empleado",
+        "operationId": "agregarEmpleado",
+        "requestBody": {
+          "description": "Crea un nuevo empleado asociado a un area",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Empleado"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/empleados": {
+      "get": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Listar todos los datos de los empleados",
+        "description": "Devolver todos los empleados de la empresa",
+        "operationId": "listarEmpleados",
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Empleados"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/empleados/{nombre}": {
+      "get": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Encuentra los/el empleado por su nombre",
+        "description": "Retorna uno o mas empleados",
+        "operationId": "obtenerEmpleadoPorNombre",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "description": "Nombre del empleado a retornar",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operacion Exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Empleados"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nombre no registrado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Areas": {
+        "type": "object",
+        "properties": {
+          "areas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Area"
+            }
+          }
+        }
+      },
+      "Area": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int",
+            "example": 1
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Marketing"
+          },
+          "piso": {
+            "type": "integer",
+            "format": "int",
+            "example": 2
+          }
+        }
+      },
+      "Empleados": {
+        "type": "object",
+        "properties": {
+          "empleados": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Empleado"
+            }
+          }
+        }
+      },
+      "Empleado": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int",
+            "example": 1
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Celia"
+          },
+          "apellido": {
+            "type": "string",
+            "example": "Perez"
+          },
+          "email": {
+            "type": "string",
+            "example": "cp123@email.com"
+          },
+          "areaId": {
+            "type": "integer",
+            "format": "int",
+            "example": 1
+          }
+        }
+      }
+    }
+  }
+}

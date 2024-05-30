@@ -170,10 +170,12 @@ class TrabajadorController(Resource):
                 'message':'Trabajador creado exitosamente'
             }
         except Exception as e:
-            return {
+            response = jsonify({
                 'message': 'Error al crear el trabajador',
-                'content': e.args
-            },400
+                'content': str(e)
+            })
+            response.status_code = 400
+            return response
 
 class TrabajadorUnitarioController(Resource):
     dto = TrabajadorDTO()
