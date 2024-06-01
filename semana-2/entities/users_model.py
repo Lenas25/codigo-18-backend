@@ -31,7 +31,7 @@ class User(db.Model):
             'full_name': self.full_name,
             'email': self.email,
             'password': self.password,
-            'phoneNumber': self.phoneNumber,
+            'phone_number': self.phoneNumber,
             'gender': self.gender,
 
         }
