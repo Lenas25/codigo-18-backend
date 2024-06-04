@@ -9,5 +9,5 @@ def encrypt_password(password):
     evitar ataques de fuerza bruta
     """
     salt = bcrypt.gensalt()
-    # primero el password se convierte a bytes y luego se encripta con el salt y el hashpw cifra la contraseña, retorna un texto encriptado
+    # primero el password se convierte a bytes y luego se encripta con el salt y el hashpw cifra la contraseña, retorna un texto encriptado en bytes
     return bcrypt.hashpw(password.encode('utf-8'), salt)
