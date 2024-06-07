@@ -1,4 +1,7 @@
 from flask import Blueprint, jsonify, request
+# jsonify -> convierte un diccionario en un json
+# request -> permite obtener la informacion que envia el usuario
+# Blueprint -> clase que permite crear rutas
 from extensions import db
 from entities.product_model import Product
 

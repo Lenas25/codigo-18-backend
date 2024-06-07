@@ -11,3 +11,6 @@ def encrypt_password(password):
     salt = bcrypt.gensalt()
     # primero el password se convierte a bytes y luego se encripta con el salt y el hashpw cifra la contraseña, retorna un texto encriptado en bytes
     return bcrypt.hashpw(password.encode('utf-8'), salt)
+
+def check_password(password, hashed_password):
+    return bcrypt.checkpw(password,hashed_password)
