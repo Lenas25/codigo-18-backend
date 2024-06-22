@@ -23,12 +23,12 @@ class TaskViewSet(ModelViewSet):
     # hace referencia al endpoint get, solo listar se valida
     def list(self, request):
         header = request.headers.get('Authorization')
-        token_from_client = header.split()[1]
         if header is None:
             return Response({
                 'message': "Token is required"
             })
-            
+        
+        token_from_client = header.split()[1]
         if not validate_token(token_from_client):
             return Response({
                 'message': "Token no valid"
