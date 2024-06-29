@@ -3,6 +3,8 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Payment
+from django.contrib.auth.models import User
 
 class PaymentsWithMercadoPagoView(APIView):
   def post(self, request):
@@ -36,3 +38,36 @@ class PaymentsWithMercadoPagoView(APIView):
     return Response({
       "preference":preference_response
     }, status=status.HTTP_201_CREATED)
+
+class CustomCreatePayment(APIView):
+  def post(self, request):
+    mercadopago_sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+    # es para la informacion que se genera cuando se utiliza el form de mercado pago
+    payment_data = {
+      "transaction_amount": float(request.data.get('transaction_amount')),
+      "token":request.data.get('token'),
+      'description': request.data.get('description'),
+      'installments':int(request.data.get('installments')),
+      'payment_method_id':request.data.get('payment_metho_id'),
+      'payer':{
+        'email': request.data.get('email'),
+        'identification':{
+          'type': request.data.get('type'),
+          'number': request.data.get('number')
+        }
+      }
+    }
+    # registrar el pago en mercado pago
+    payment_response = mercadopago_sdk.payment().create(payment_data)
+    
+    Payment.objects.create(
+      user = User.objects.get(pk=1),
+      payment_id = payment_response["response"].get("id")
+    )
+    
+    
+    return Response({
+      'payment_response': payment_response,
+    },status=status.HTTP_201_CREATED)
+    
+    
